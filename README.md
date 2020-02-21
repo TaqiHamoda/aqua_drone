@@ -1,2 +1,2 @@
-# legalens
-AI that can detect loopholes and exploitable content within laws and legislations.
+# AquaDrone
+A prototype of the UI of our system interface.

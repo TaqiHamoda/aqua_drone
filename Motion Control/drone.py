@@ -16,29 +16,30 @@ Motor_tl = 23
 Motor_tr = 24
 
 
-def motor_adjust(bl, br, tl , tr):
-	"""
-	Adjusts motor values. All inputs are booleans.
-	"""
-	GPIO.output(Motor_bl, bl)
-	GPIO.output(Motor_br, br)
-	GPIO.output(Motor_tl, tl)
-	GPIO.output(Motor_tr, tr)
-
-
 def motor_run():
 	"""
 	Manages the motors values and adjusts it based on server instruction.
 	Only thread that can modify exit
 	"""
+	#         BL      BR     TL     TR    run
 	motor = [False, False, False, False, True]
+	data = ""
 
 	while motor[4]:
-		motor_adjust(motor[0], motor[1], motor[2], motor[3])  # Adjusts motors based on server instruction
-		data = (server.recv(5)).decode()  # Recieves instruction from server
+		# Adjusts motors based on server instruction
+		GPIO.output(Motor_bl, motor[0])
+		GPIO.output(Motor_br, motor[1])
+		GPIO.output(Motor_tl, motor[2])
+		GPIO.output(Motor_tr, motor[3])
 
-		for i in range(5):
-			motor[i] = data[i] == '1'
+		# Recieves instruction from server. Blocks until instruction is recieved
+		data += (server.recv(5)).decode()
+
+		# Process data recieved
+		if len(data) >= 5:
+			for i in range(5):
+				motor[i] = (data[i] == '1')
+			data = data[5:]
 
 	motor_adjust(False, False, False, False)  # Turn off motors
 	exit = True

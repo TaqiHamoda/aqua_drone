@@ -1,0 +1,194 @@
+/* Title section */
+
+#home-title {
+    background-image: linear-gradient(to bottom right, rgb(73, 182, 255), rgb(6, 223, 150));
+    color: white;
+}
+
+body {
+    font-family: 'Roboto', 'sans-serif';
+}
+
+a {
+    color: black;
+}
+
+/* DONT do this to h3 (used for names in MTT) */
+h1, h2, h4 {
+    font-weight: 700;
+}
+
+
+.navbar {
+    margin-bottom: 2rem;
+}
+
+.navbar-light .navbar-brand,
+.navbar-light .navbar-brand:hover {
+    color: white;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.nav-link {
+    color: white !important;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+h1 {
+    color: white;
+}
+
+.title-button
+ {
+    border-color: white;
+    background-color: white;
+    color: rgb(59, 178, 252);
+    margin: 5% 3% 5% 0;
+}
+
+.title-button:hover {
+    border-color: white;
+    background-color: transparent;
+    color: white;
+}
+
+
+.container-fluid {
+    padding: 3% 12% 7%;
+}
+
+.navbar {
+    padding: 0 0 4.5rem;
+}
+
+
+/* About section (home) */
+
+#home-about {
+    padding-top: 8%;
+}
+
+.about-img {
+    width: 9rem;
+    padding-bottom: 10%;
+}
+
+
+.description-row {
+    padding-top: 5%;
+    margin-bottom: 10%;
+}
+
+
+
+/* Home: Model in Action */
+
+#home-mia {
+    background-image: linear-gradient(to bottom right, rgb(73, 182, 255), rgb(6, 223, 150));
+    text-align: center;
+    color: white;
+}
+
+.ai-img {
+    margin-top: 1.5rem;
+
+}
+
+/* How it works */
+
+#home-how {
+    text-align: center;
+}
+
+.how-row {
+    margin-top: 1.7rem;
+}
+
+.how-text {
+    text-align: left;
+    font-size: 1.2rem;
+}
+
+.how-img {
+    width: 9rem;
+    padding-bottom: 10%;
+    padding-top: 5%;
+}
+
+
+/* Footer */
+
+#footer {
+    background-image: linear-gradient(to bottom right, rgb(73, 182, 255), rgb(6, 223, 150));
+    text-align: center;
+    padding: 10%;
+}
+
+.fa {
+    padding: 0.5rem;
+}
+
+
+/* ********************************************* */
+
+/* About page (reuses some of the above) */
+
+/* Title Section */
+
+.about-word {
+    text-align: center;
+    font-weight: 700;
+}
+
+/* About */
+
+.main-title {
+    font-weight: 700;
+}
+
+/* Meet The Team */
+
+#MTT {
+    background-image: linear-gradient(to bottom right, #f5f7fa, #dceaff);
+    text-align: center;
+}
+
+
+.name-tag{
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+    font-weight: 700;
+}
+
+.chief-tag {
+    padding-bottom: 1.2rem;
+}
+
+
+/* ********************************************* */
+
+/* Services page (reuses some of the above) */
+
+/* What We Do */
+
+.svc-title {
+    padding-left: 1.25rem;
+    font-size: 1.4rem;
+}
+
+.svc-button {
+    border-color: white;
+    background-image: linear-gradient(to right, rgb(73, 182, 255), rgb(6, 223, 150));
+    color: white;
+    margin: 5% 3% 5% 0;
+}
+
+.svc-button:hover {
+    border-color: white;
+    background-image: linear-gradient(to right, rgb(6, 223, 150), rgb(73, 182, 255));
+    color: white;
+}
+
+

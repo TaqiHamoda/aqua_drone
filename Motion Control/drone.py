@@ -83,8 +83,15 @@ if __name__ == "__main__":
 		thread_2.join()
 		thread_1.join()
 
-	except:
-		print("Error: Cannot start threads")
+	except Exception as e:
+		print(e)
+
+		# Turn off motors
+		GPIO.output(Motor_bl, 0)
+		GPIO.output(Motor_br, 0)
+		GPIO.output(Motor_tl, 0)
+		GPIO.output(Motor_tr, 0)
+
 
 	# Cleanup
 	GPIO.cleanup()

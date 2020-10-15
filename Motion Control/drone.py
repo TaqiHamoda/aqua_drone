@@ -16,28 +16,37 @@ Motor_tl = 23
 Motor_tr = 24
 
 
+def motor_adjust(bl, br, tl , tr):
+	"""
+	Adjusts motor values. All inputs are booleans.
+	"""
+	GPIO.output(Motor_bl, bl)
+	GPIO.output(Motor_br, br)
+	GPIO.output(Motor_tl, tl)
+	GPIO.output(Motor_tr, tr)
+
+
 def motor_run():
 	"""
-	Runs the motor until the server signals to stop. Only thread that can modify exit
+	Manages the motors values and adjusts it based on server instruction.
+	Only thread that can modify exit
 	"""
-	motor = ""
+	motor = [False, False, False, False, True]
 
-	while motor != "----":
-		while len(motor) < 4:
-			motor += repr(server.recv(4))
+	while motor[4]:
+		motor_adjust(motor[0], motor[1], motor[2], motor[3])  # Adjusts motors based on server instruction
+		data = (server.recv(5)).decode()  # Recieves instruction from server
 
-		GPIO.output(Motor_bl, int(motor[0]))
-		GPIO.output(Motor_br, int(motor[1]))
-		GPIO.output(Motor_tl, int(motor[2]))
-		GPIO.output(Motor_tr, int(motor[3]))
+		for i in range(5):
+			motor[i] = data[i] == '1'
 
-		motor = ""
-
+	motor_adjust(False, False, False, False)  # Turn off motors
 	exit = True
 
 
-def camera_send():
+def camera_send():  # TODO: Needs to be implemented
 	while not exit:
+		pass
 
 
 if __name__ == "__main__":

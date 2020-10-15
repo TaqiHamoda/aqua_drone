@@ -26,28 +26,32 @@ def motor_run():
 	data = ""
 
 	while motor[4]:
-		# Adjusts motors based on server instruction
-		GPIO.output(Motor_bl, motor[0])
-		GPIO.output(Motor_br, motor[1])
-		GPIO.output(Motor_tl, motor[2])
-		GPIO.output(Motor_tr, motor[3])
-
 		# Recieves instruction from server. Blocks until instruction is recieved
-		data += (server.recv(5)).decode()
+		data += (server.recv(7)).decode()
 
-		# Process data recieved
-		if len(data) >= 5:
+		# Process data recieved if complete
+		if "\r\n" in data:
 			for i in range(5):
 				motor[i] = (data[i] == '1')
-			data = data[5:]
+
+			# Adjusts motors based on server instruction
+			GPIO.output(Motor_bl, motor[0])
+			GPIO.output(Motor_br, motor[1])
+			GPIO.output(Motor_tl, motor[2])
+			GPIO.output(Motor_tr, motor[3])
+
+			data = data[data.index("\r\n") + 2:]  # Shift data recieved over
 
 	motor_adjust(False, False, False, False)  # Turn off motors
 	exit = True
 
 
-def camera_send():  # TODO: Needs to be implemented
-	while not exit:
+# TODO: Needs to be implemented
+def camera_send():
+	"""while not exit:
 		pass
+	"""
+	pass
 
 
 if __name__ == "__main__":
@@ -65,15 +69,17 @@ if __name__ == "__main__":
 	# Connects to server
 	server.connect((HOST, PORT))
 
-	# Runs Threads
 	try:
+		# Runs Threads
 		thread_1 = threading.Thread(name="camera", target=camera_send)
 		thread_2 = threading.Thread(name="motor", target=motor_run)
 
+		# Start camera first so that the server has input to process
 		thread_1.start()
 		sleep(5)
 		thread_2.start()
 
+		# Wait until server is finished processing
 		thread_2.join()
 		thread_1.join()
 

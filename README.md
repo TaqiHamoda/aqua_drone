@@ -10,4 +10,4 @@ An AI driven underwater drone that can survey and map the oceans floor. Powered 
 
 
 ## Prerequirements
-The machine learning model needs tensorflow, numpy, and opencv
+The machine learning model needs tensorflow, tensorflow object detection API, numpy, and opencv

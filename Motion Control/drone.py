@@ -1,6 +1,8 @@
 import RPi.GPIO as GPIO
 import threading
 import socket
+import picamera
+import io
 from time import sleep
 
 # Global Variables
@@ -14,6 +16,25 @@ Motor_bl = 21
 Motor_br = 22
 Motor_tl = 23
 Motor_tr = 24
+
+
+# A class for the raspberry pi camera to write to
+class StreamingOutput(object):
+    def __init__(self):
+        self.frame = None
+        self.buffer = io.BytesIO()
+        self.condition = threading.Condition()
+
+    def write(self, buf):
+        if buf.startswith(b'\xff\xd8'):
+            # New frame, copy the existing buffer's content and notify all
+            # clients it's available
+            self.buffer.truncate()
+            with self.condition:
+                self.frame = self.buffer.getvalue()
+                self.condition.notify_all()
+            self.buffer.seek(0)
+        return self.buffer.write(buf)
 
 
 def motor_run():
@@ -42,16 +63,22 @@ def motor_run():
 
 			data = data[data.index("\r\n") + 2:]  # Shift data recieved over
 
-	motor_adjust(False, False, False, False)  # Turn off motors
 	exit = True
 
 
-# TODO: Needs to be implemented
-def camera_send():
-	"""while not exit:
-		pass
-	"""
-	pass
+def camera_send(output):
+	# While the server didn't send an exit response
+	while not exit:
+		# Wait until there is a frame to write and then write it
+		with output.condition:
+			output.condition.wait()
+			frame = output.frame
+
+		# Send the frame
+		server.send(frame)
+		server.send(b"\r\n")
+
+
 
 
 if __name__ == "__main__":
@@ -63,36 +90,42 @@ if __name__ == "__main__":
 	GPIO.setup(Motor_tl, GPIO.OUT)
 	GPIO.setup(Motor_tr, GPIO.OUT)
 
-	# Sets up Camera
-
-
 	# Connects to server
 	server.connect((HOST, PORT))
 
-	try:
-		# Runs Threads
-		thread_1 = threading.Thread(name="camera", target=camera_send)
-		thread_2 = threading.Thread(name="motor", target=motor_run)
+	# Set up the camera
+	with picamera.PiCamera(resolution='1280x720', framerate=60) as camera:  # 60 fps @ 720p
+		output = StreamingOutput()
+		camera.start_recording(output, format='mjpeg')
 
-		# Start camera first so that the server has input to process
-		thread_1.start()
-		sleep(5)
-		thread_2.start()
+		try:
+			# Runs Threads
+			thread_1 = threading.Thread(name="camera", target=camera_send, args=(output, ))
+			thread_2 = threading.Thread(name="motor", target=motor_run)
 
-		# Wait until server is finished processing
-		thread_2.join()
-		thread_1.join()
+			# Start camera first so that the server has input to process
+			thread_1.start()
+			sleep(5)
+			thread_2.start()
 
-	except Exception as e:
-		print(e)
+			# Wait until server is finished processing
+			thread_2.join()
+			thread_1.join()
 
-		# Turn off motors
-		GPIO.output(Motor_bl, 0)
-		GPIO.output(Motor_br, 0)
-		GPIO.output(Motor_tl, 0)
-		GPIO.output(Motor_tr, 0)
+		except Exception as e:
+			print(e)
+
+		finally:
+			# Turn off motors
+			GPIO.output(Motor_bl, 0)
+			GPIO.output(Motor_br, 0)
+			GPIO.output(Motor_tl, 0)
+			GPIO.output(Motor_tr, 0)
+
+			# Stop the camera
+			camera.stop_recording()
 
 
 	# Cleanup
 	GPIO.cleanup()
-	sock.close()
+	socket.close()
